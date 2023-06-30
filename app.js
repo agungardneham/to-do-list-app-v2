@@ -1,6 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
+const _ = require("lodash");
 const date = require(__dirname + "/date.js");
 
 const app = express();
@@ -86,17 +87,27 @@ app.post("/", function(req, res){
 
 app.post("/delete", function(req, res){
   const itemId = req.body.checkbox;
-  console.log(itemId);
-  Item.findByIdAndRemove(itemId, function(err){
-    if(!err){
-      console.log("Delete success");
-    }
-  });
-  res.redirect("/");
+  const listName = req.body.listName;
+  const day = date.getDate();
+
+  if(listName === day){
+    Item.findByIdAndRemove(itemId, function(err){
+      if(!err){
+        console.log("Delete success");
+      }
+    });
+    res.redirect("/");
+  } else{
+    List.findOneAndUpdate({name: listName}, {$pull: {items: {_id: itemId}}}, function (err, foundList){
+      if(!err){
+        res.redirect(`/${listName}`);
+      }
+    })
+  }
 })
 
 app.get("/:listId", function(req, res){
-  const customList = req.params.listId;
+  const customList = _.capitalize(req.params.listId);
   
   List.findOne({name: customList}, function(err, results){
     if(!err){
@@ -113,10 +124,6 @@ app.get("/:listId", function(req, res){
     }
   })
 })
-
-app.get("/about", function(req, res){
-  res.render("about");
-});
 
 app.listen(3000, function() {
   console.log("Server started on port 3000");
