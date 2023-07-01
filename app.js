@@ -89,7 +89,7 @@ app.post("/delete", function(req, res){
   const itemId = req.body.checkbox;
   const listName = req.body.listName;
   const day = date.getDate();
-
+  
   if(listName === day){
     Item.findByIdAndRemove(itemId, function(err){
       if(!err){
