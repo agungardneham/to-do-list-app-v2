@@ -1,7 +1,9 @@
+require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const _ = require("lodash");
+const { MongoClient, ServerApiVersion } = require('mongodb');
 const date = require(__dirname + "/date.js");
 
 const app = express();
@@ -11,7 +13,7 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static("public"));
 
-mongoose.connect("mongodb://0.0.0.0:27017/todolistDB", {useNewUrlParser: true, useUnifiedTopology: true});
+mongoose.connect("mongodb+srv://" + process.env.ATLAS_ID + ":" + process.env.ATLAS_PASSWORD + "@cluster0.5mnvhch.mongodb.net/todolistDB", {useNewUrlParser: true, useUnifiedTopology: true});
 
 const itemSchema = new mongoose.Schema({
   name: {
